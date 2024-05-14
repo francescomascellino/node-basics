@@ -255,10 +255,43 @@ customEmitter.on('response',
 
 // INVOCO L'EVENTO RESPONSE
 customEmitter.emit('response',
-// DATI
+    // DATI (data)
     {
         name: 'John',
         id: 30 
     }
 );
+```
+
+# STREAM
+A SCOPO DI TEST, CREIAMO UN FILE DI GRANDI DIMENSIONI
+```javascript
+const { writeFileSync } = require('fs');
+
+for (let i = 0; i < 10000; i++) {
+    writeFileSync('./big.txt', `hello world ${i}\n`, { flag: 'a' }); // { flag: 'a' } = appendi in coda al file: posiziona il puntatore di scrittura al termine del file
+}
+```
+
+SE VOLESSIMO LEGGERLO SENZA STREAM, OTTEREMO UN UNICO BUFFER:
+```javascript
+// IMPORTIAMO ANCHE readFileSync
+const { readFileSync, writeFileSync } = require('fs');
+
+const bigFile = readFileSync('./big.txt', 'utf8');
+```
+
+USANDO LO STREAM, OTTERREMMO I CHUNK DEL FILE GRADUALMENTE DIVISO IN PIU' BUFFER
+```javascript
+// IMPORTIAMO ANCHE readFileSync
+const { createReadStream, readFileSync, writeFileSync } = require('fs');
+
+const stream = createReadStream('./big.txt');
+
+// data e result sono parametri usati come nomi di variabili per rappresentare i dati passati al callback quando l'evento 'data' viene emesso. 
+// data e result non sono parametri "nativi" nel senso che non sono parole chiave del linguaggio o parametri riservati, ma sono convenzioni di denominazione comuni per i dati passati agli eventi 'data' o ad altri eventi simili nel contesto di Node.js 
+
+stream.on('data', (result) => {
+    console.log(result);
+});
 ```
