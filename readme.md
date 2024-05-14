@@ -63,6 +63,7 @@ const server = http.createServer(
     }
 )
 
+// LASCIA IL SERVER IN ASCOLTO NELLA PORTA UTILIZZATA
 server.listen(3000);
 ```
 ## CON SWITCH STATEMENT
@@ -191,3 +192,73 @@ delayedSum(50, 60,
 );
 ```
 
+# INSTALLARE NODEMON (NODE MONITOR) PER FAR RESTARE IL SERVER IN ASCOLTO PER MODIFICHE AL FILE DI LAVORO
+```bash
+npm install nodemon --save-dev
+// SALVIAMO COME DEV DEPENDECY POICHE' SERVE SOLO IN FASE DI SVILUPPO E NON IN PRODUZONE 
+```
+
+DENTRO package.json SOTTO scrpts AGGIUNGERE LO SCRIPT PER LANCIARE NodeMon USANDO IL FILE DESIDERATO:
+```json
+"scripts": {
+    "start": "nodemon index.js"
+  },
+```
+
+LANCIARE LO SCRIPT DA TERMINALE
+```bash
+npm start
+
+// oppure
+npm run start
+
+// oppure
+nodemon index.js
+```
+
+# EVENT EMITTER
+IMPORTIAMO IL MODULO BUILT-IN EVENTS
+```javascript
+const EventEmitter = require('events');
+```
+
+CREIAMO UN EMITTER
+```javascript
+const customEmitter = new EventEmitter();
+```
+
+EVENT LISTENER
+```javascript
+// L'EMITTER E' IN ATTESA DI UN EVENTO RESPONSE, DOPO LA QUALE ESEGUE UNA FUNZIONE DI CALLBACK
+customEmitter.on('response',
+    // CALLBACK
+    () => {
+    console.log(`data received`);
+    }
+);
+```
+
+EVENT EMITTER
+```javascript
+// INVOCO L'EVENTO RESPONSE
+customEmitter.emit('response');
+```
+
+POSSIAMO AGGIUNGERE DATI ALL'EMISSIONE DA POTER ELABORARE NELLA FUNZIONE DI CALLBACK
+```javascript
+customEmitter.on('response',
+    // CALLBACK
+    (data) => {
+        console.log(`data received. User: ${data.name}, ID: ${data.id}`);
+    }
+);
+
+// INVOCO L'EVENTO RESPONSE
+customEmitter.emit('response',
+// DATI
+    {
+        name: 'John',
+        id: 30 
+    }
+);
+```
