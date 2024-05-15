@@ -21,7 +21,8 @@ app.get('/users', (req, res) => {
             return { id, name, surname, age }
         }
     )
-    res.json(usersPreview)
+    console.log(usersPreview);
+    res.status(200).json(usersPreview)
 })
 
 app.get('/users/:id', (req, res) => {
@@ -33,7 +34,31 @@ app.get('/users/:id', (req, res) => {
         return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(user)
+    res.status(200).json(user)
+})
+
+app.get('/search', (req, res) => {
+    console.log(req.query);
+
+    const { query, limit } = req.query;
+
+    // creiamo una copia di users
+    let filteredUsers = [...users];
+
+    // filtriamo gli utenti in base alla query
+    if (query) {
+        filteredUsers = filteredUsers.filter(
+            (user) => {
+
+                // Ritorniamo l'utente il cui nome inizia con il parametro di ricerca
+                // cerchiamo il parametro in minuscolo per evitare errori
+                return user.name.toLowerCase().startsWith(query.toLowerCase());
+            }
+        )
+    }
+
+    res.status(200).json(filteredUsers)
+
 })
 
 app.all('*', (req, res) => {

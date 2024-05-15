@@ -482,3 +482,44 @@ app.get('/users/:id', (req, res) => {
 
 })
 ```
+
+E' possibile concatenare le routes
+```js
+app.get('/products/:slug/reviews/:id', (req, res) => {
+
+    //...
+
+})
+```
+
+# QUERY STRING PARAMS
+Questo metodo è utile per passare parametri che non sono necessariamente univoci, ad esempio per filtrare i dati.
+Ad esempio, in questo modo, una query come
+```
+http://localhost:3000/search?query=an
+```
+ci ritornerà un json con gli utenti il cui nome inizia con "an"
+```js
+app.get('/search', (req, res) => {
+
+    console.log(req.query); // { query: 'an' }
+
+    // Esportiamo le variabili query e limit
+    const { query, limit } = req.query;
+
+    // creiamo una copia di users
+    let filteredUsers = [...users];
+
+if (query) {
+        filteredUsers = filteredUsers.filter((user) => {
+
+            return user.name.toLowerCase().startsWith(query.toLowerCase());
+
+        })
+    }
+
+    res.status(200).json(filteredUsers)
+
+})
+```
+
