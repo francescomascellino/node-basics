@@ -295,3 +295,74 @@ stream.on('data', (result) => {
     console.log(result);
 });
 ```
+
+# HTTP REQUESTS
+client -> http requerst -> server (node/express) -> http response -> client
+
+METODI HTTP:
+- GET:  Lettura dei dati
+- POST: Invio dei dati
+- PUT: modifica dei dati (totale)
+- PATCH: Modifica dei dati (parziale)
+- DELETE: eliminazione dei dati 
+
+# EXPRESS
+INIZIALIZZARE UN NUOVO PROGETTO 
+-y sta per "yes". Il comando accetterà automaticamente tutte le impostazioni predefnite alle eventuali domande.
+```bash
+npm init -y
+```
+
+INSTALLARE EXPRESS (viene autoaticamente installato nelle dependecies)
+```bash
+npm i express
+```
+
+INSTALLARE NODEMON (come dev dependency)
+```bash
+npm install nodemon --save-dev
+```
+
+DENTRO package.json SOTTO scrpts AGGIUNGERE LO SCRIPT PER LANCIARE NodeMon USANDO IL FILE DESIDERATO:
+```json
+"scripts": {
+    "start": "nodemon index.js" // npm start
+  },
+```
+
+IMPORTIAMO EXPRESS
+```js
+const express = require('express');
+```
+
+ASSEGNIAMO AD app UNA NUOVA ISTANZA DI EXPRESS (generata dal metodo express())
+```js
+const app = express();
+```
+
+ALLA RICHIESTA CON METODO GET DI '/' INVIAMO LA RESPONSE "Hello World"
+```js
+app.get('/', function (req, res) {
+    res.send('Hello World')
+}) 
+```
+METTIAMO app (EXPRESS) IN ASCOLTO DELLA PORTA DESIDERATA
+```js
+app.listen(3000)
+```
+
+GESTIAMO LA RICHIESTA DI UNA IPOTETICA PAGINA "ABOUT"
+```js
+app.get('/about', (req, res) => {
+    res.send('<h1>About</h1></h1> <p>Back to <a href="/">home</a></p>')
+})
+```
+
+GESTIAMO LA RICHIESTA DI UNA PAGINA NON ESISTENTE
+```js
+// Qualsiasi metodo di richiesta (all) verso qualsiasi url (*)
+app.all('*', (req, res) => {
+    res.send(`<h1>404: Resource non found.</h1> <p>Back to <a href="/">home</a></p>`)
+})
+```
+
