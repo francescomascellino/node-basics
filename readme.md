@@ -366,3 +366,25 @@ app.all('*', (req, res) => {
 })
 ```
 
+GESTIRE I FILES STATICI
+Creiamo una cartella "public" e indichiamo a Express di utilizzarla come source per i nostri files statici
+```js
+app.use(express.static('/public'));
+```
+
+Creiamo il nostro file html, ad esempio "home.html".
+Modifichiamo la nostra richiesta alla home indicando il nome del file e il suo persorso.
+https://www.digitalocean.com/community/tutorials/use-expressjs-to-deliver-html-files
+```js
+app.get('/', (req, res) => {
+    res.sendFile('home.html', {root: __dirname + "/public"})
+})
+
+app.get('/about', (req, res) => {
+    res.sendFile('about.html', { root: __dirname + '/public' })
+})
+
+app.all('*', (req, res) => {
+    res.sendFile('404.html', { root: __dirname + '/public' })
+})
+```
