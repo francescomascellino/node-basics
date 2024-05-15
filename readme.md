@@ -376,6 +376,12 @@ Creiamo il nostro file html, ad esempio "home.html".
 Modifichiamo la nostra richiesta alla home indicando il nome del file e il suo persorso.
 https://www.digitalocean.com/community/tutorials/use-expressjs-to-deliver-html-files
 ```js
+const express = require('express');
+
+const app = express();
+
+app.use(express.static('/public'));
+
 app.get('/', (req, res) => {
     res.sendFile('home.html', {root: __dirname + "/public"})
 })
@@ -386,5 +392,49 @@ app.get('/about', (req, res) => {
 
 app.all('*', (req, res) => {
     res.sendFile('404.html', { root: __dirname + '/public' })
+})
+
+app.listen(3000)
+```
+
+## RESPONSE CON FILE JSON
+```js
+app.get('/json', (req, res) => {
+    res.json([{ nome: 'Luca', cognome: 'Rossi' }, { nome: 'Marco', cognome: 'Verdi' }])
+})
+```
+
+Esportiamo l'oggetto da un file esterno
+```js
+// json.js
+const users = [
+    {
+        name: 'Luca',
+        cognome: 'Rossi',
+        age: 30,
+        adrress: {
+            city: 'Milano',
+            street: 'Via Roma',
+            civicNr: '3',
+            cap: 90000
+        },
+        interests: ['books', 'music']
+    },
+// ...
+]
+
+module.exports = { users };
+```
+
+Importiamo l'oggetto nel nostro codice:
+```js
+// index.js
+const {users} = require('./json');
+```
+
+Modifichiamo la nostra response:
+```js
+app.get('/json', (req, res) => {
+    res.json(users)
 })
 ```
