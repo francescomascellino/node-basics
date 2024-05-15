@@ -494,11 +494,7 @@ app.get('/products/:slug/reviews/:id', (req, res) => {
 
 # QUERY STRING PARAMS
 Questo metodo è utile per passare parametri che non sono necessariamente univoci, ad esempio per filtrare i dati.
-Ad esempio, in questo modo, una query come
-```
-http://localhost:3000/search?query=an
-```
-ci ritornerà un json con gli utenti il cui nome inizia con "an"
+
 ```js
 app.get('/search', (req, res) => {
 
@@ -523,3 +519,38 @@ if (query) {
 })
 ```
 
+Ad esempio, una query come
+```
+http://localhost:3000/search?query=an
+```
+ci ritornerà un json con gli utenti il cui nome inizia con "an"
+```json
+[
+    {
+        "id": "1",
+        "name": "Anna",
+        "surname": "Bianchi",
+        "age": 28,
+        "address": {
+            "city": "Roma",
+            "street": "Via Roma",
+            "civicNr": "20",
+            "cap": 184
+        },
+        "interests": ["books","travel"]
+    },
+    {
+        "id": "10",
+        "name": "Andrea",
+        "surname": "Martini",
+        "age": 37,
+        "address": {
+            "city": "Messina",
+            "street": "Via Messina",
+            "civicNr": "40",
+            "cap": 98100
+        },
+        "interests": ["sports","travel"]
+    }
+]
+```
