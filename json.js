@@ -1,8 +1,9 @@
 const users = [
 
     {
+        id: '0',
         name: 'Luca',
-        cognome: 'Rossi',
+        surname: 'Rossi',
         age: 30,
         adrress: {
             city: 'Milano',
@@ -14,8 +15,9 @@ const users = [
     },
 
     {
+        id: '1',
         name: 'Marco',
-        cognome: 'Verdi',
+        surname: 'Verdi',
         age: 25,
         adrress: {
             city: 'Roma',

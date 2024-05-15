@@ -438,3 +438,47 @@ app.get('/json', (req, res) => {
     res.json(users)
 })
 ```
+
+# ROUTE PARAMS
+Possiamo manipolare i dati in modo da ottenere soltanto quelli necessari.
+Ad esempio, potremmo non aver bisogno di tutti i dettagli, ma soltanto di quelli essenziali.
+```js
+app.get('/users', (req, res) => {
+    const usersPreview = users.map(
+        (user) => {
+            // dato che le variabili avranno lo stesso nome, possiamo destrutturare l'oggetto
+            const { id, name, surname, age } = user;
+            return { id, name, surname, age }
+        }
+    )
+    res.json(usersPreview)
+})
+```
+
+Ottenere i dati di un singolo elemento:
+```js
+app.get('/users/1', (req, res) => {
+    const user = users.find(user => user.id == 1);
+    res.json(user)
+})
+```
+
+Questo ci porta ad aver bisogno di un parametro della rotta da poter sostituire dinamicamente all'id dell'utente (in questo caso).
+```js
+app.get('/users/:id', (req, res) => {
+
+    // http://localhost:3000/users/11 loggerà in console del terminale { id: '11' }
+    console.log(req.params);
+
+    const { id } = req.params;
+    const user = users.find(user => user.id == id);
+
+    // Se l'utente non viene trovato ritorna un errore 404 come .json
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user)
+
+})
+```
