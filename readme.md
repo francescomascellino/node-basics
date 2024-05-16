@@ -573,3 +573,42 @@ http://localhost:3000/search?query=an&limit=1
 ```
 ritornerà solo il primo utente il cui nome inizia con "an".
 
+Quando inviamo una response condizionale dobbiamo assicurarci di usare un return per evitare di inviarla più volte.
+```js
+if (filteredUsers.length < 1) {
+    // è necessario uscire dallo script!
+    return res.status(200).json({ message: "No user matches the search criteria" });
+}
+
+// Senza return nell'if, potrebbe inviare la res sia se non trova utenti che qui, generando un errore!
+res.status(200).json({ filteredUsers })
+```
+
+# MIDDLEWARE
+I middleware sono funzioni che vengono eseguiti durante la richiesta. Ci servono ad agire da quando riceviamo la req a quando inviamo la res.
+***req -> middleware -> res***
+```js
+const middleware = (req, res, next) => {
+    const { method, url } = req
+    console.log(`Request Method: ${method} - Request Url: ${url}`)
+}
+
+app.get('/', middleware, (req, res) => {
+    res.sendFile('home.html', { root: __dirname + "/public" })
+})
+```
+
+In un middleware, dobbiamo usare il parametro next per indicare al codice di procedere con la req, oppure inviare una res (per questo vengono indicati come parametro del middleware).
+Senza next il codice sarebbe rimasto fermo in attesa e avremmo avuto un messaggio di "Sito non raggiungibile"
+```js
+const middleware = (req, res, next) => {
+    const { method, url } = req
+    console.log(`Request Method: ${method} - Request Url: ${url}`)
+    next() 
+}
+
+app.get('/', middleware, (req, res) => {
+    res.sendFile('home.html', { root: __dirname + "/public" })
+})
+```
+

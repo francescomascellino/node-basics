@@ -6,9 +6,19 @@ const { users } = require('./json');
 
 app.use(express.static('/public'));
 
-app.get('/', (req, res) => {
+const middleware = (req, res, next) => {
+    const { method, url } = req
+    console.log(`Request Method: ${method} - Request Url: ${url}`)
+    next()
+}
+
+app.get('/', middleware, (req, res) => {
     res.sendFile('home.html', { root: __dirname + "/public" })
 })
+
+/* app.get('/', (req, res) => {
+    res.sendFile('home.html', { root: __dirname + "/public" })
+}) */
 
 app.get('/about', (req, res) => {
     res.sendFile('about.html', { root: __dirname + '/public' })
@@ -62,7 +72,12 @@ app.get('/search', (req, res) => {
         filteredUsers = filteredUsers.slice(0, Number(limit))
     }
 
-    res.status(200).json(filteredUsers)
+    if (filteredUsers.length < 1) {
+        // Quando inviamo una response condizionale dobbiamo assicurarci di usare un return per evitare di inviarla più volte
+        return res.status(200).json({ message: "No user matches the search criteria" });
+    }
+
+    res.status(200).json({ filteredUsers })
 
 })
 
