@@ -57,7 +57,7 @@ app.get('/search', (req, res) => {
         )
     }
 
-    // se + presente un limit, effettuiamo uno slice dei risultati
+    // se è presente un limit, effettuiamo uno slice dei risultati
     if (limit) {
         filteredUsers = filteredUsers.slice(0, Number(limit))
     }

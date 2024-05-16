@@ -555,8 +555,9 @@ ci ritornerà un json con gli utenti il cui nome inizia con "an"
 ]
 ```
 
-Gestire il limite di risultati da mostrare (limit)
+Gestire il limite di risultati da mostrare (limit):
 ```js
+// se è presente un limit, effettuiamo uno slice dei risultati
 if (limit) {
     filteredUsers = filteredUsers.slice(0, Number(limit))
 }
@@ -571,3 +572,4 @@ ritornerà solo i primi tre utenti, mentre una query di
 http://localhost:3000/search?query=an&limit=1
 ```
 ritornerà solo il primo utente il cui nome inizia con "an".
+
