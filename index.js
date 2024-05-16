@@ -148,6 +148,55 @@ app.post('/api/users/', (req, res) => {
     res.status(200).json({ status: 200, message: "User added successfully", data: newUser });
 });
 
+// EDIT SINGLE USER - EDIT
+/* 
+app.put('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+
+    const user = users.find(user => user.id == id);
+
+    if (!user) {
+        return res.status(404).json({ status: 404, error: 'User not found' });
+    }
+
+    Object.assign(user, req.body);
+
+    res.status(200).json({ status: 200, messahe: 'User edited succeffully!', data: user });
+});
+ */
+
+app.put('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+
+    const user = users.find(user => user.id == id);
+
+    if (!user) {
+        return res.status(404).json({ status: 404, error: 'User not found' });
+    }
+
+    const payload = {
+
+        // ASSEGNA I VALORI DELLA REQUEST ALLE CHIAVI NECESSARIE
+        name: req.body.name,
+        surname: req.body.surname,
+        age: Number(req.body.age),
+        address: {
+            city: req.body.city,
+            street: req.body.street,
+            civicNr: req.body.civicNr,
+            cap: Number(req.body.cap)
+        },
+
+        // SEPARA GLI INTERESSI E LI INSERISCE IN UN ARRAY, RIMUOVENDO GLI SPAZI BIANCHI
+        interests: req.body.interests.split(',').map(interest => interest.trim())
+
+    }
+
+    Object.assign(user, payload);
+
+    res.status(200).json({ status: 200, messahe: 'User edited succeffully!', data: user });
+});
+
 app.all('*', (req, res) => {
     res.sendFile('404.html', { root: __dirname + '/public' })
 })

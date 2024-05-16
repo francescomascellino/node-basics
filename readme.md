@@ -723,7 +723,6 @@ Utile per interpretare dati da un form come:
 ```
 
 # ESEMPIO CREAZIONE USER TRAMITE FORM
-
 Creiamo il form:
 ```html
 <!-- Ricordiamo di inserire il metodo e l'action -->
@@ -748,6 +747,11 @@ Creiamo il form:
 
 Creiamo il controller:
 ```js
+// ...
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+// ...
+
 app.post('/api/users/', (req, res) => {
 
     console.log("body:", req.body);
@@ -781,3 +785,77 @@ app.post('/api/users/', (req, res) => {
     res.status(200).json({ status: 200, message: "User added successfully", data: newUser });
 });
 ```
+
+# PUT
+In modo simile al controller show possiamo modificare il nostro utente allindice desiderato.
+```js
+app.put('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+    let user = users.find(user => user.id == id);
+
+    if (!user) {
+        return res.status(404).json({ status: 404, error: 'User not found' });
+    }
+
+    user = req.body;
+
+    res.status(200).json({ status: 200, data: user })
+})
+```
+
+Questo metodo però assegna il valore dell'oggetto req.body a user, sostituendolo in toto.
+Usando Object.assign() potremmo copiare le proprietà, sostituendo quelle esistenti e aggiungendo quelle mancanti. 
+Si tratta ovviamente di soluzioni provvisorie.
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
+```js
+app.put('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+
+    const user = users.find(user => user.id == id);
+
+    if (!user) {
+        return res.status(404).json({ status: 404, error: 'User not found' });
+    }
+
+    Object.assign(user, req.body);
+
+    res.status(200).json({ status: 200, messahe: 'User edited succeffully!', data: user });
+});
+```
+
+Assegnando i valori di un form a un payload possiamo iniziare a dar forma al controller:
+```js
+app.put('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+
+    const user = users.find(user => user.id == id);
+
+    if (!user) {
+        return res.status(404).json({ status: 404, error: 'User not found' });
+    }
+
+    const payload = {
+
+        // ASSEGNA I VALORI DELLA REQUEST ALLE CHIAVI NECESSARIE
+        name: req.body.name,
+        surname: req.body.surname,
+        age: Number(req.body.age),
+        address: {
+            city: req.body.city,
+            street: req.body.street,
+            civicNr: req.body.civicNr,
+            cap: Number(req.body.cap)
+        },
+
+        // SEPARA GLI INTERESSI E LI INSERISCE IN UN ARRAY, RIMUOVENDO GLI SPAZI BIANCHI
+        interests: req.body.interests.split(',').map(interest => interest.trim())
+
+    }
+
+    Object.assign(user, payload);
+
+    res.status(200).json({ status: 200, messahe: 'User edited succeffully!', data: user });
+});
+```
+
+
