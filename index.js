@@ -161,7 +161,7 @@ app.put('/api/users/:id', (req, res) => {
 
     Object.assign(user, req.body);
 
-    res.status(200).json({ status: 200, messahe: 'User edited succeffully!', data: user });
+    res.status(200).json({ status: 200, message: 'User edited succeffully!', data: user });
 });
  */
 
@@ -194,11 +194,26 @@ app.put('/api/users/:id', (req, res) => {
 
     Object.assign(user, payload);
 
-    res.status(200).json({ status: 200, messahe: 'User edited succeffully!', data: user });
+    res.status(200).json({ status: 200, message: 'User edited succeffully!', data: user });
 });
 
-app.all('*', (req, res) => {
-    res.sendFile('404.html', { root: __dirname + '/public' })
-})
+app.delete('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+    const user = users.find(user => user.id == id);
 
-app.listen(3000)
+    if (!user) {
+        return res.status(404).json({ status: 404, error: 'User not found' });
+    }
+
+    const index = users.indexOf(user);
+
+    users.splice(index, 1);
+
+    res.status(200).json({ status: 200, message: 'User deleted successfully!' }); 
+});
+
+    app.all('*', (req, res) => {
+        res.sendFile('404.html', { root: __dirname + '/public' })
+    })
+
+    app.listen(3000)

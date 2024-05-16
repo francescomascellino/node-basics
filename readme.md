@@ -819,7 +819,7 @@ app.put('/api/users/:id', (req, res) => {
 
     Object.assign(user, req.body);
 
-    res.status(200).json({ status: 200, messahe: 'User edited succeffully!', data: user });
+    res.status(200).json({ status: 200, message: 'User edited succeffully!', data: user });
 });
 ```
 
@@ -854,8 +854,27 @@ app.put('/api/users/:id', (req, res) => {
 
     Object.assign(user, payload);
 
-    res.status(200).json({ status: 200, messahe: 'User edited succeffully!', data: user });
+    res.status(200).json({ status: 200, message: 'User edited succeffully!', data: user });
 });
 ```
 
+# DELETE
+```js
+app.delete('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+    const user = users.find(user => user.id == id);
 
+    if (!user) {
+        return res.status(404).json({ status: 404, error: 'User not found' });
+    }
+
+    const index = users.indexOf(user);
+
+    // Se non necessitassimo di un controllo sulla presenza di user:
+    // index = users.findIndex(user => user.id == id)
+
+    users.splice(index, 1);
+
+    res.status(200).json({ status: 200, message: 'User deleted successfully!', user: user }); 
+});
+```
