@@ -98,10 +98,11 @@ app.get('/api/users/:id', (req, res) => {
     res.status(200).json({ status: 200, data: user })
 })
 
+// Dobbiamo gestire i dati in entrata come JSON tramite il middleware di Express .json()
 app.use(express.json());
 
 // ADD USER - CREATE
-app.post('/api/users', (req, res) => {
+/* app.post('/api/users', (req, res) => {
 
     console.log(req.body);
 
@@ -111,7 +112,41 @@ app.post('/api/users', (req, res) => {
 
     res.status(200).json({ status: 200, message: "User added succeffully", data: newUser });
 
-})
+}) */
+
+app.use(express.urlencoded({ extended: false }));
+
+app.post('/api/users/', (req, res) => {
+
+    console.log("body:", req.body);
+
+    const newUser = {
+
+        // Controlla la lungghezza di users.
+        // Se è > 0 allora assegna come id l'id dell'ultimo user +1
+        // altrimenti assegna 0
+        id: (users.length > 0) ? (Number(users[users.length - 1].id) + 1).toString() : '0',
+
+        // ASSEGNA I VALORI DELLA REQUEST ALLE CHIAVI NECESSARIE
+        name: req.body.name,
+        surname: req.body.surname,
+        age: Number(req.body.age),
+        address: {
+            city: req.body.city,
+            street: req.body.street,
+            civicNr: req.body.civicNr,
+            cap: Number(req.body.cap)
+        },
+
+        // SEPARA GLI INTERESSI E LI INSERISCE IN UN ARRAY, RIMUOVENDO GLI SPAZI BIANCHI
+        interests: req.body.interests.split(',').map(interest => interest.trim())
+
+    };
+
+    users.push(newUser);
+
+    res.status(200).json({ status: 200, message: "User added successfully", data: newUser });
+});
 
 app.all('*', (req, res) => {
     res.sendFile('404.html', { root: __dirname + '/public' })

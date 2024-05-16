@@ -654,6 +654,9 @@ app.use(express.json());
 Aggiungere un utente tramite chiamata POST
 (ovviamente non stiamo gestendo eventuali dati da inviare a un DB per adesso, ma un semplice oggetto json inviato tramite POSTMAN)
 ```js
+// DI NORMA VA RICHIAMATO A INIZIO DEL CODICE
+app.use(express.json());
+
 app.post('/api/users', (req, res) => {
 
     console.log(req.body);
@@ -705,4 +708,76 @@ Response:
         ]
     }
 }
+```
+
+Per ricevere i dati da un form dobbiamo usare il middleware urlencoded()
+```js
+app.use(express.urlencoded({ extended: false }));
+```
+
+Quando extended è impostato a true, Express utilizza la libreria qs (querystring parser) per la parsing dei dati del form. Questa libreria permette la parsing di oggetti annidati e array complessi.
+Utile per interpretare dati da un form come:
+```html
+<input type="text" name="address[city]" value="Lucca">
+<input type="text" name="address[street]" value="Via Settembre">
+```
+
+# ESEMPIO CREAZIONE USER TRAMITE FORM
+
+Creiamo il form:
+```html
+<!-- Ricordiamo di inserire il metodo e l'action -->
+<form action="/api/users" method="POST">
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <br><br>
+
+    <label for="surname">Surname:</label>
+    <input type="text" id="surname" name="surname" required>
+
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age" required>
+
+<!-- ecc -->
+
+    <button type="submit">Add User</button>
+</form>
+```
+
+Creiamo il controller:
+```js
+app.post('/api/users/', (req, res) => {
+
+    console.log("body:", req.body);
+
+    // Crrea un nuovo user
+    const newUser = {
+
+        // Controlla la lungghezza di users.
+        // Se è > 0 allora assegna come id l'id dell'ultimo user +1
+        // altrimenti assegna 0
+        id: (users.length > 0) ? (Number(users[users.length - 1].id) + 1).toString() : '0',
+
+        // ASSEGNA I VALORI DELLA REQUEST ALLE CHIAVI NECESSARIE
+        name: req.body.name,
+        surname: req.body.surname,
+        age: Number(req.body.age),
+        address: {
+            city: req.body.city,
+            street: req.body.street,
+            civicNr: req.body.civicNr,
+            cap: Number(req.body.cap)
+        },
+
+        // SEPARA GLI INTERESSI E LI INSERISCE IN UN ARRAY, RIMUOVENDO GLI SPAZI BIANCHI
+        interests: req.body.interests.split(',').map(interest => interest.trim())
+
+    };
+
+    users.push(newUser);
+
+    res.status(200).json({ status: 200, message: "User added successfully", data: newUser });
+});
 ```
