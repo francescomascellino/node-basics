@@ -554,3 +554,20 @@ ci ritornerà un json con gli utenti il cui nome inizia con "an"
     }
 ]
 ```
+
+Gestire il limite di risultati da mostrare (limit)
+```js
+if (limit) {
+    filteredUsers = filteredUsers.slice(0, Number(limit))
+}
+```
+
+Di conseguenza una query di 
+```
+http://localhost:3000/search?limit=3
+```
+ritornerà solo i primi tre utenti, mentre una query di
+```
+http://localhost:3000/search?query=an&limit=1
+```
+ritornerà solo il primo utente il cui nome inizia con "an".
