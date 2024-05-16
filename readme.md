@@ -748,7 +748,6 @@ Creiamo il form:
 Creiamo il controller:
 ```js
 // ...
-app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // ...
 
@@ -789,6 +788,10 @@ app.post('/api/users/', (req, res) => {
 # PUT
 In modo simile al controller show possiamo modificare il nostro utente allindice desiderato.
 ```js
+// ...
+app.use(express.json());
+// ...
+
 app.put('/api/users/:id', (req, res) => {
     const { id } = req.params;
     let user = users.find(user => user.id == id);
@@ -808,6 +811,10 @@ Usando Object.assign() potremmo copiare le proprietà, sostituendo quelle esiste
 Si tratta ovviamente di soluzioni provvisorie.
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
 ```js
+// ...
+app.use(express.json());
+// ...
+
 app.put('/api/users/:id', (req, res) => {
     const { id } = req.params;
 
@@ -825,6 +832,10 @@ app.put('/api/users/:id', (req, res) => {
 
 Assegnando i valori di un form a un payload possiamo iniziare a dar forma al controller:
 ```js
+// ...
+app.use(express.urlencoded({ extended: false }));
+// ...
+
 app.put('/api/users/:id', (req, res) => {
     const { id } = req.params;
 
@@ -856,6 +867,19 @@ app.put('/api/users/:id', (req, res) => {
 
     res.status(200).json({ status: 200, message: 'User edited succeffully!', data: user });
 });
+```
+
+Per ricevere dati da un form:
+```js
+// ...
+app.use(express.urlencoded({ extended: false }));
+// ...
+```
+Per ricevere dati in formato .json:
+```js
+// ...
+app.use(express.json());
+// ...
 ```
 
 # DELETE

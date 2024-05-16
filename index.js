@@ -18,8 +18,8 @@ const usersRouter = require('./routes/users');
 // Definizione radice delle rotte e uso del router
 app.use('/api/users', usersRouter)
 
-// Dobbiamo gestire i dati in entrata come JSON tramite il middleware di Express .json()
-app.use(express.json());
+// Dobbiamo gestire i dati in entrata come JSON tramite il middleware di Express .json() se dovessimo ricevere in entrata oggetti grezzi
+// app.use(express.json());
 
 // Rotte pagine statiche
 app.get('/', (req, res) => {
