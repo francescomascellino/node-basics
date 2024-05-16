@@ -878,3 +878,111 @@ app.delete('/api/users/:id', (req, res) => {
     res.status(200).json({ status: 200, message: 'User deleted successfully!', user: user }); 
 });
 ```
+
+# ROUTING
+Creiamo un file per le rotte. 
+In questo caso creeremo un file per le rotte API di user.
+Adesso non sarà più app a gestire le rotte, ma router, quindi dobbiamo effettuare le dovute modifiche
+```js
+// routes/users.js
+const express = require('express');
+
+const router = express.Router();
+
+// Diciamo a express di usare il middlexare di gestione dei body delle richieste via form
+router.use(express.urlencoded({ extended: false }));
+
+// Importiamo il file contentente i nostri utenti
+const { users } = require('../json');
+
+// Sostituiamo app con router in ogni rotta
+router.get('/api/users', (req, res) => {
+    res.status(200).json({ status: 200, data: users })
+})
+
+// GET SINGLE USER - SHOW
+router.get('/api/users/:id', (req, res) => {
+    //...
+})
+
+router.post('/api/users/', (req, res) => {
+    //...
+});
+
+
+router.put('/api/users/:id', (req, res) => {
+    //...
+});
+
+router.delete('/api/users/:id', (req, res) => {
+    //...
+});
+
+// Esportiamo il router
+module.exports = router;
+```
+
+Importiamo il router nel nostro script principale e diciamo di utilizzarlo al path desiderato
+```js
+const usersRouter = require('./routes/users');
+
+app.use('/api/users', usersRouter)
+```
+
+Adesso abbiamo definito come home del router '/api/users'.
+Questo vuol dire che cercando il controller index, lui andrà all'url /api/users + url del controller.
+attualmente, essendo in questo caso index definito come 
+```js
+router.get('/api/users', (req, res) => {
+    res.status(200).json({ status: 200, data: users })
+})
+```
+noi potremmo accedere alla rotta soltanto all'indirizzo 
+```
+http://localhost:3000/api/users/api/users
+```
+per ovviare a questo inconveniente dobbiamo eliminare i refusi, partendo dal presupposto che la radice della rotta è gia definita in 
+```js
+app.use('/api/users', usersRouter)
+```
+il nostro codice modificato sarò quindi:
+```js
+// routes/users.js
+const express = require('express');
+
+const router = express.Router();
+
+// Diciamo a express di usare il middlexare di gestione dei body delle richieste via form
+router.use(express.urlencoded({ extended: false }));
+
+// Importiamo il file contentente i nostri utenti
+const { users } = require('../json');
+
+// INDEX
+router.get('/', (req, res) => {
+    res.status(200).json({ status: 200, data: users })
+})
+
+// SHOW
+router.get('/:id', (req, res) => {
+    //...
+})
+
+// CREATE
+router.post('/', (req, res) => {
+    //...
+});
+
+// EDIT
+router.put('/:id', (req, res) => {
+    //...
+});
+
+// DELETE
+router.delete('/:id', (req, res) => {
+    //...
+});
+
+// Esportiamo il router
+module.exports = router;
+```

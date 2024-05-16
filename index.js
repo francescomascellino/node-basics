@@ -2,26 +2,36 @@ const express = require('express');
 
 const app = express();
 
+// Impotrtiamo il file degli user (per gli esempi sottostanti)
 const { users } = require('./json');
 
 const middleware = require('./middleware');
 
 app.use('/users', middleware);
 
+// Dichiariamo la cartella che serve i files statici
 app.use(express.static('/public'));
 
-/* app.get('/', (req, res) => {
-    res.sendFile('home.html', { root: __dirname + "/public" })
-}) */
+// Import router
+const usersRouter = require('./routes/users');
 
+// Definizione radice delle rotte e uso del router
+app.use('/api/users', usersRouter)
+
+// Dobbiamo gestire i dati in entrata come JSON tramite il middleware di Express .json()
+app.use(express.json());
+
+// Rotte pagine statiche
 app.get('/', (req, res) => {
     res.sendFile('home.html', { root: __dirname + "/public" })
+
 })
 
 app.get('/about', (req, res) => {
-    res.sendFile('about.html', { root: __dirname + '/public' })
+    res.sendFile('about.html', { root: __dirname + "/public" })
 })
 
+// Preview dati utenti
 app.get('/users', (req, res) => {
     const usersPreview = users.map(
         (user) => {
@@ -33,6 +43,7 @@ app.get('/users', (req, res) => {
     res.status(200).json(usersPreview)
 })
 
+// Singolo utente
 app.get('/users/:id', (req, res) => {
     console.log(req.params);
     const { id } = req.params;
@@ -45,6 +56,7 @@ app.get('/users/:id', (req, res) => {
     res.status(200).json(user)
 })
 
+// Ricerca utenti
 app.get('/search', (req, res) => {
     console.log(req.query);
 
@@ -79,141 +91,9 @@ app.get('/search', (req, res) => {
 
 })
 
-// ESEMPIO API
-
-// GET ALL USERS - INDEX
-app.get('/api/users', (req, res) => {
-    res.status(200).json({ status: 200, data: users })
+// Gestione rotte non definite
+app.all('*', (req, res) => {
+    res.sendFile('404.html', { root: __dirname + '/public' })
 })
 
-// GET SINGLE USER - SHOW
-app.get('/api/users/:id', (req, res) => {
-    const { id } = req.params;
-    const user = users.find(user => user.id == id);
-
-    if (!user) {
-        return res.status(404).json({ status: 404, error: 'User not found' });
-    }
-
-    res.status(200).json({ status: 200, data: user })
-})
-
-// Dobbiamo gestire i dati in entrata come JSON tramite il middleware di Express .json()
-app.use(express.json());
-
-// ADD USER - CREATE
-/* app.post('/api/users', (req, res) => {
-
-    console.log(req.body);
-
-    const newUser = req.body;
-
-    users.push(newUser);
-
-    res.status(200).json({ status: 200, message: "User added succeffully", data: newUser });
-
-}) */
-
-app.use(express.urlencoded({ extended: false }));
-
-app.post('/api/users/', (req, res) => {
-
-    console.log("body:", req.body);
-
-    const newUser = {
-
-        // Controlla la lungghezza di users.
-        // Se è > 0 allora assegna come id l'id dell'ultimo user +1
-        // altrimenti assegna 0
-        id: (users.length > 0) ? (Number(users[users.length - 1].id) + 1).toString() : '0',
-
-        // ASSEGNA I VALORI DELLA REQUEST ALLE CHIAVI NECESSARIE
-        name: req.body.name,
-        surname: req.body.surname,
-        age: Number(req.body.age),
-        address: {
-            city: req.body.city,
-            street: req.body.street,
-            civicNr: req.body.civicNr,
-            cap: Number(req.body.cap)
-        },
-
-        // SEPARA GLI INTERESSI E LI INSERISCE IN UN ARRAY, RIMUOVENDO GLI SPAZI BIANCHI
-        interests: req.body.interests.split(',').map(interest => interest.trim())
-
-    };
-
-    users.push(newUser);
-
-    res.status(200).json({ status: 200, message: "User added successfully", data: newUser });
-});
-
-// EDIT SINGLE USER - EDIT
-/* 
-app.put('/api/users/:id', (req, res) => {
-    const { id } = req.params;
-
-    const user = users.find(user => user.id == id);
-
-    if (!user) {
-        return res.status(404).json({ status: 404, error: 'User not found' });
-    }
-
-    Object.assign(user, req.body);
-
-    res.status(200).json({ status: 200, message: 'User edited succeffully!', data: user });
-});
- */
-
-app.put('/api/users/:id', (req, res) => {
-    const { id } = req.params;
-
-    const user = users.find(user => user.id == id);
-
-    if (!user) {
-        return res.status(404).json({ status: 404, error: 'User not found' });
-    }
-
-    const payload = {
-
-        // ASSEGNA I VALORI DELLA REQUEST ALLE CHIAVI NECESSARIE
-        name: req.body.name,
-        surname: req.body.surname,
-        age: Number(req.body.age),
-        address: {
-            city: req.body.city,
-            street: req.body.street,
-            civicNr: req.body.civicNr,
-            cap: Number(req.body.cap)
-        },
-
-        // SEPARA GLI INTERESSI E LI INSERISCE IN UN ARRAY, RIMUOVENDO GLI SPAZI BIANCHI
-        interests: req.body.interests.split(',').map(interest => interest.trim())
-
-    }
-
-    Object.assign(user, payload);
-
-    res.status(200).json({ status: 200, message: 'User edited succeffully!', data: user });
-});
-
-app.delete('/api/users/:id', (req, res) => {
-    const { id } = req.params;
-    const user = users.find(user => user.id == id);
-
-    if (!user) {
-        return res.status(404).json({ status: 404, error: 'User not found' });
-    }
-
-    const index = users.indexOf(user);
-
-    users.splice(index, 1);
-
-    res.status(200).json({ status: 200, message: 'User deleted successfully!' }); 
-});
-
-    app.all('*', (req, res) => {
-        res.sendFile('404.html', { root: __dirname + '/public' })
-    })
-
-    app.listen(3000)
+app.listen(3000)
