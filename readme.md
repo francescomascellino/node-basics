@@ -948,8 +948,10 @@ module.exports = router;
 
 Importiamo il router nel nostro script principale e diciamo di utilizzarlo al path desiderato
 ```js
+// Import router
 const usersRouter = require('./routes/users');
 
+// Definizione radice delle rotte e uso del router
 app.use('/api/users', usersRouter)
 ```
 
