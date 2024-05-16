@@ -4,21 +4,19 @@ const app = express();
 
 const { users } = require('./json');
 
+const middleware = require('./middleware');
+
+app.use('/users', middleware);
+
 app.use(express.static('/public'));
-
-const middleware = (req, res, next) => {
-    const { method, url } = req
-    console.log(`Request Method: ${method} - Request Url: ${url}`)
-    next()
-}
-
-app.get('/', middleware, (req, res) => {
-    res.sendFile('home.html', { root: __dirname + "/public" })
-})
 
 /* app.get('/', (req, res) => {
     res.sendFile('home.html', { root: __dirname + "/public" })
 }) */
+
+app.get('/', (req, res) => {
+    res.sendFile('home.html', { root: __dirname + "/public" })
+})
 
 app.get('/about', (req, res) => {
     res.sendFile('about.html', { root: __dirname + '/public' })

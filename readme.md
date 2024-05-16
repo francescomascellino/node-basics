@@ -15,7 +15,8 @@ const persona3 = "Marco";
 
 const persona4 = "Mario";
 
-module.exports = {persona3, persona4};
+module.exports = { persona3, persona4 }; 
+// mmodule.exports = persona3;
 ```
 ```js
 // functions.js
@@ -598,13 +599,13 @@ app.get('/', middleware, (req, res) => {
 })
 ```
 
-In un middleware, dobbiamo usare il parametro next per indicare al codice di procedere con la req, oppure inviare una res (per questo vengono indicati come parametro del middleware).
+In un middleware, dobbiamo usare il parametro next per indicare al codice di procedere con la req, oppure inviare una sua res (per questo vengono indicati come parametro del middleware).
 Senza next il codice sarebbe rimasto fermo in attesa e avremmo avuto un messaggio di "Sito non raggiungibile"
 ```js
 const middleware = (req, res, next) => {
     const { method, url } = req
     console.log(`Request Method: ${method} - Request Url: ${url}`)
-    next() 
+    next()
 }
 
 app.get('/', middleware, (req, res) => {
@@ -612,3 +613,34 @@ app.get('/', middleware, (req, res) => {
 })
 ```
 
+Potrebbero esserci infatti middleware che inviano le proprie response.
+```js
+const middleware = (req, res, next) => {
+    const { method, url } = req
+    console.log(`Request Method: ${method} - Request Url: ${url}`)
+
+    // ad esempio il nostro utente non è nel database
+    if(condizione) {
+        // ci invia a una pagina di registrazione
+        req.send('Response dal Middleware')
+    }
+
+    next()
+}
+```
+
+E' possibile usare app.use per indicare a Express di avviare automaticamente il nostro middleware in ogni richiesta
+```js
+app.use(middleware);
+```
+
+Possiamo anche indicare a quali percorsi associare un middleware.
+Ad esempio potremmo associarlo a tutti i percorsi che derivano da /users
+```js
+app.use('/users', middleware);
+```
+
+Possiamo importare più middleware in app.use, come array. Verranno eseguiti nell'ordine specificato.
+```js
+app.use([middleare, auth]);
+```
