@@ -644,3 +644,65 @@ Possiamo importare più middleware in app.use, come array. Verranno eseguiti nel
 ```js
 app.use([middleare, auth]);
 ```
+
+Il middleware express.json ci servirà per convertire i dati in entrata in formato json (quando ad esempio usiamo chiamate di tipo POST)
+```js
+app.use(express.json());
+```
+
+# POST
+Aggiungere un utente tramite chiamata POST
+(ovviamente non stiamo gestendo eventuali dati da inviare a un DB per adesso, ma un semplice oggetto json inviato tramite POSTMAN)
+```js
+app.post('/api/users', (req, res) => {
+
+    console.log(req.body);
+
+    const newUser = req.body;
+
+    users.push(newUser);
+
+    res.status(200).json({ status: 200, message: "User added succeffully", data: newUser });
+
+})
+```
+Body della POST Request:
+```json
+{
+        "id": "20",
+        "name": "Aldo",
+        "surname": "Ferro",
+        "age": 52,
+        "address": {
+            "city": "Lucca",
+            "street": "Via Settembre",
+            "civicNr": "8",
+            "cap": 59300
+        },
+        "interests": ["trekking", "gaming"]
+}
+```
+
+Response:
+```json
+{
+    "status": 200,
+    "message": "User added succeffully",
+    "data": {
+        "id": "20",
+        "name": "Aldo",
+        "surname": "Ferro",
+        "age": 52,
+        "address": {
+            "city": "Lucca",
+            "street": "Via Settembre",
+            "civicNr": "8",
+            "cap": 59300
+        },
+        "interests": [
+            "trekking",
+            "gaming"
+        ]
+    }
+}
+```

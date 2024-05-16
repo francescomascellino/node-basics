@@ -79,6 +79,40 @@ app.get('/search', (req, res) => {
 
 })
 
+// ESEMPIO API
+
+// GET ALL USERS - INDEX
+app.get('/api/users', (req, res) => {
+    res.status(200).json({ status: 200, data: users })
+})
+
+// GET SINGLE USER - SHOW
+app.get('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+    const user = users.find(user => user.id == id);
+
+    if (!user) {
+        return res.status(404).json({ status: 404, error: 'User not found' });
+    }
+
+    res.status(200).json({ status: 200, data: user })
+})
+
+app.use(express.json());
+
+// ADD USER - CREATE
+app.post('/api/users', (req, res) => {
+
+    console.log(req.body);
+
+    const newUser = req.body;
+
+    users.push(newUser);
+
+    res.status(200).json({ status: 200, message: "User added succeffully", data: newUser });
+
+})
+
 app.all('*', (req, res) => {
     res.sendFile('404.html', { root: __dirname + '/public' })
 })
