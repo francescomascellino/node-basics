@@ -1012,3 +1012,104 @@ router.delete('/:id', (req, res) => {
 // Esportiamo il router
 module.exports = router;
 ```
+
+## USARE UN DATABASE (MySql) IN NODE.JS
+Installare il modulo MySql
+```bash
+npm install mysql
+```
+
+Creiamo un file per gestire la connessione al database
+```js
+// db.js
+const mysql = require('mysql');
+
+// Impostiamo la nostra connessione al database
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'username',
+    password: 'password',
+    database: 'dbname'
+});
+
+// Connettiamoci al db e usiamo una callback per gestire eventuali errori
+connection.connect((err) => {
+    if (err) {
+        console.error('Errore di connessione al database:', err);
+        return;
+    }
+    console.log('Connessione al database MySQL riuscita!');
+});
+
+module.exports = connection;
+```
+Definizione delle rotte del database
+```js
+// routes/usersDB.js
+
+const express = require('express');
+
+// Importiamo il modulo del router
+const router = express.Router();
+
+// Importiamo il modulo di gestione del database
+// L'importazione di questo modulo esegue il codice in db.js ed esegue la connessione ad database.
+const db = require('../db');
+
+// INDEX
+router.get('/', (req, res) => {
+
+    // Inviamo la query al DB e usiamo una callback per gestire gli errori
+    db.query('SELECT * FROM users', (err, results) => {
+
+        if (err) {
+            console.error('Errore durante la query:', err);
+
+            res.status(500).json({ status: 500, error: 'Errore durante il recupero degli utenti dal database' });
+
+            return;
+        }
+
+        // Inviamo un json con i risultati e lo status della API request
+        res.status(200).json({ status: 200, data: results });
+    });
+});
+
+module.exports = router;
+```
+
+Utilizziamo le rotte dell'api database
+```js
+// index.js
+const express = require('express');
+const app = express();
+const usersRouter = require('./routes/usersDB');
+
+app.use('/api/usersDB', usersRouter);
+
+app.listen(3000)
+```
+
+## UTILIZZO DI UN POOL DI CONNESSIONI
+Per migliorare la performance del database, possiamo utilizzare un pool di connessioni. Un pool di connessioni è un insieme di connessioni al database che possono essere condivise tra più richieste.
+```js
+// db.js
+const mysql = require('mysql');
+
+// Pool di connessioni
+const pool = mysql.createPool({
+    // Limite massimo di connessioni da gestire
+    connectionLimit: 10,
+
+    // Dati di connessione al database
+    host: 'localhost',
+    user: 'username',
+    password: 'password',
+    database: 'dbname'
+});
+
+module.exports = pool;
+```
+Utilizzando un pool di connessioni (***mysql.createPool()***), non è necessario chiamare esplicitamente ***connection.connect()*** perché il pool gestisce automaticamente la creazione, il riutilizzo e la chiusura delle connessionie. Il pool si occupa di aprire le connessioni quando necessario e di mantenerle pronte per l'uso.
+Il pool crea e gestisce automaticamente un certo numero di connessioni (definito da ***connectionLimit***). Le connessioni vengono aperte quando necessario e chiuse quando non sono più necessarie.
+
